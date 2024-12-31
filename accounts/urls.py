@@ -11,5 +11,6 @@ urlpatterns = [
     path('permissions/', PermissionListView.as_view(), name='permission-list'),
     path('companies/<int:id>/', SingleCompanyListView.as_view(), name='company-list'),
     path('companies/count/', CompanyCountView.as_view(), name='company-count'),
+    
 ]
 

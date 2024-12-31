@@ -7,8 +7,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import *
 from rest_framework import generics
 from rest_framework.exceptions import NotFound
+from django.contrib.auth.hashers import check_password
+from django.conf import settings
+logger = logging.getLogger(__name__) 
+import jwt
+from datetime import datetime, timedelta
 
-logger = logging.getLogger(__name__)
+
+
 
 class AdminLoginView(APIView):
     def post(self, request, *args, **kwargs):
@@ -34,7 +40,7 @@ class AdminLoginView(APIView):
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
- # Import necessary modules
+ 
 
 
 
@@ -47,7 +53,7 @@ class CreateCompanyView(APIView):
         
         if serializer.is_valid():
             company = serializer.save()
-            # Use the URL of the company_logo field
+           
             company_logo_url = company.company_logo.url if company.company_logo else None
             
             return Response({
@@ -144,3 +150,11 @@ class CompanyCountView(APIView):
     def get(self, request, *args, **kwargs):
         company_count = Company.objects.count()
         return Response({"count": company_count}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+ 

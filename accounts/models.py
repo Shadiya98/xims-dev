@@ -1,5 +1,9 @@
 from django.db import models
 
+import os
+import uuid
+
+from storages.backends.s3boto3 import S3Boto3Storage
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -32,11 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-from django.db import models
-import os
-import uuid
 
-from storages.backends.s3boto3 import S3Boto3Storage
 
 class MediaStorage(S3Boto3Storage):
     location = 'media'
@@ -79,7 +79,7 @@ class Company(models.Model):
     ]
 
     permissions = models.ManyToManyField('Permission', blank=True)
-
+    date_joined = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.company_name
 
@@ -88,3 +88,6 @@ class Permission(models.Model):
     
     def __str__(self):
         return self.get_name_display()
+    
+    
+ 
