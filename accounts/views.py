@@ -241,20 +241,43 @@ class ChangeSubscriberStatus(APIView):
         return Response({"error": "Invalid action. Use 'block' or 'active'."}, status=status.HTTP_400_BAD_REQUEST)
     
 
+
+
+from datetime import date
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Subscribers, Subscription
+
 class SubscriptionStatusAPIView(APIView):
-   def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         today = date.today()
-        active_subscribers = Subscribers.objects.filter(status='active', expiry_date__gte=today)
-        active_serializer = SubscriberSerializer(active_subscribers, many=True)        
-        expired_subscribers = Subscribers.objects.filter(expiry_date__lt=today)
-        expired_serializer = SubscriberSerializer(expired_subscribers, many=True)
+        
+        # Get all subscriptions
+        subscriptions = Subscription.objects.all()
+        subscription_details = []
+
+        for subscription in subscriptions:
+            # Count active subscribers for this subscription
+            active_subscribers_count = Subscribers.objects.filter(
+                plan=subscription,
+                status='active',
+                expiry_date__gte=today
+            ).count()
+
+            # Count expired subscribers for this subscription
+            expired_subscribers_count = Subscribers.objects.filter(
+                plan=subscription,
+                expiry_date__lt=today
+            ).count()
+
+            subscription_details.append({
+                "subscription_name": subscription.subscription_name,
+                "validity": subscription.validity,
+                "active_subscribers_count": active_subscribers_count,
+                "expired_subscribers_count": expired_subscribers_count,
+            })
+
         return Response({
-            "active_subscribers": {
-                "count": active_subscribers.count(),
-                "details": active_serializer.data,
-            },
-            "expired_subscribers": {
-                "count": expired_subscribers.count(),
-                "details": expired_serializer.data,
-            }
+            "subscriptions": subscription_details,
         }, status=status.HTTP_200_OK)
