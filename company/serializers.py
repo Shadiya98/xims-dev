@@ -482,3 +482,4 @@ class ProcedureSerializer(serializers.ModelSerializer):
 class RecordFormatSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecordFormat
+        fields = '__all__'

@@ -153,8 +153,89 @@ class CompanyCountView(APIView):
 
 
 
+class SubscriptionListCreateView(APIView):
+    def get(self, request):
+        subscriptions = Subscription.objects.all()
+        serializer = SubscriptionSerializer(subscriptions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
+    def post(self, request):
+        serializer = SubscriptionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
  
+class SubscriptionDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return Subscription.objects.get(pk=pk)
+        except Subscription.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        subscription = self.get_object(pk)
+        if not subscription:
+            return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = SubscriptionSerializer(subscription)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        subscription = self.get_object(pk)
+        if not subscription:
+            return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = SubscriptionSerializer(subscription, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        subscription = self.get_object(pk)
+        if not subscription:
+            return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
+        subscription.delete()
+        return Response({"message": "Subscription deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class SubscriberListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Subscribers.objects.all()
+    serializer_class = SubscriberSerializer
+
+    def perform_create(self, serializer):
+    
+        serializer.save()
+
+ 
+class SubscriberRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Subscribers.objects.all()
+    serializer_class = SubscriberSerializer
+
+ 
+class ChangeSubscriberStatus(APIView):
+    def post(self, request, pk):
+        try:
+     
+            subscriber = Subscribers.objects.get(id=pk)
+        except Subscribers.DoesNotExist:
+            raise NotFound("Subscriber not found")
+
+     
+        action = request.data.get('action')
+        
+ 
+        if action == 'block':
+            subscriber.status = 'blocked'
+            subscriber.save()
+            return Response({"message": "Subscriber has been blocked successfully."}, status=status.HTTP_200_OK)
+        
+        
+        elif action == 'active':
+            subscriber.status = 'active'
+            subscriber.save()
+            return Response({"message": "Subscriber has been activated successfully."}, status=status.HTTP_200_OK)
+        
+        
+        return Response({"error": "Invalid action. Use 'block' or 'active'."}, status=status.HTTP_400_BAD_REQUEST)

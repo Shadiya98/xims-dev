@@ -1,12 +1,9 @@
+ 
+
+
 from rest_framework import serializers
+from django.contrib.auth.hashers import make_password
 from .models import *
-from django.contrib.auth.hashers import make_password
-
-
-
-from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
-from .models import Company
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,4 +74,14 @@ class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
         fields = ['id', 'name']
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = '__all__' 
+
+class SubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscribers
+        fields = ['id', 'company', 'plan', 'expiry_date'] 
         

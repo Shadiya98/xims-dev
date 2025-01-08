@@ -2,7 +2,8 @@ from django.db import models
 
 import os
 import uuid
-
+from datetime import timedelta
+from django.utils import timezone
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -52,10 +53,8 @@ class Company(models.Model):
     password = models.CharField(max_length=255)  
     phone_no1 = models.CharField(max_length=15)
     phone_no2 = models.CharField(max_length=15, blank=True, null=True)   
-   
+     
     company_logo = models.ImageField(storage=MediaStorage(), upload_to=generate_unique_filename, null=True, blank=True)
-
-
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('blocked', 'Blocked'),
@@ -63,13 +62,11 @@ class Company(models.Model):
          
     ] 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-
     QUALITY = 'quality'
     ENVIRONMENT = 'environment'
     HEALTH_AND_SAFETY = 'health_and_safety'
     ENERGY = 'energy'
     IMS = 'ims'
-
     PERMISSION_CHOICES = [
         (QUALITY, 'Quality'),
         (ENVIRONMENT, 'Environment'),
@@ -91,3 +88,31 @@ class Permission(models.Model):
     
     
  
+class Subscription(models.Model):
+    subscription_name = models.CharField(max_length=255,default = True,null = True)
+    validity =  models.IntegerField(blank = True,null=True)
+
+    def __str__(self):
+        return self.subscription_name
+    
+class Subscribers(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)  
+    plan = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
+    
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('blocked', 'Blocked'),
+    ]
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    expiry_date = models.DateField(null=True, blank=True)  
+
+    def save(self, *args, **kwargs):
+ 
+        if self.plan and not self.expiry_date:
+            duration = self.plan.validity  
+            self.expiry_date = (timezone.now() + timedelta(days=duration)).date()  
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.company.company_name
