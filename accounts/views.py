@@ -12,7 +12,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__) 
 import jwt
 from datetime import datetime, timedelta
-
+from datetime import date
 
 
 
@@ -239,3 +239,22 @@ class ChangeSubscriberStatus(APIView):
         
         
         return Response({"error": "Invalid action. Use 'block' or 'active'."}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class SubscriptionStatusAPIView(APIView):
+   def get(self, request, *args, **kwargs):
+        today = date.today()
+        active_subscribers = Subscribers.objects.filter(status='active', expiry_date__gte=today)
+        active_serializer = SubscriberSerializer(active_subscribers, many=True)        
+        expired_subscribers = Subscribers.objects.filter(expiry_date__lt=today)
+        expired_serializer = SubscriberSerializer(expired_subscribers, many=True)
+        return Response({
+            "active_subscribers": {
+                "count": active_subscribers.count(),
+                "details": active_serializer.data,
+            },
+            "expired_subscribers": {
+                "count": expired_subscribers.count(),
+                "details": expired_serializer.data,
+            }
+        }, status=status.HTTP_200_OK)

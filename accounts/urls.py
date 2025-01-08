@@ -16,5 +16,6 @@ urlpatterns = [
     path('subscribers/', SubscriberListCreateAPIView.as_view(), name='subscriber-list-create'),
     path('subscribers/<int:pk>/', SubscriberRetrieveUpdateDestroyAPIView.as_view(), name='subscriber-detail'),
     path('subscriber/<int:pk>/change-status/', ChangeSubscriberStatus.as_view(), name='change-company-status'),
+    path('subscriptions/status/', SubscriptionStatusAPIView.as_view(), name='subscription_status'),
 ]
 
