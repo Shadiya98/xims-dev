@@ -243,29 +243,25 @@ class ChangeSubscriberStatus(APIView):
 
 
 
-from datetime import date
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Subscribers, Subscription
+ 
 
 class SubscriptionStatusAPIView(APIView):
     def get(self, request, *args, **kwargs):
         today = date.today()
         
-        # Get all subscriptions
+  
         subscriptions = Subscription.objects.all()
         subscription_details = []
 
         for subscription in subscriptions:
-            # Count active subscribers for this subscription
+           
             active_subscribers_count = Subscribers.objects.filter(
                 plan=subscription,
                 status='active',
                 expiry_date__gte=today
             ).count()
 
-            # Count expired subscribers for this subscription
+           
             expired_subscribers_count = Subscribers.objects.filter(
                 plan=subscription,
                 expiry_date__lt=today
