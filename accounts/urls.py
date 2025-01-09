@@ -17,5 +17,9 @@ urlpatterns = [
     path('subscribers/<int:pk>/', SubscriberRetrieveUpdateDestroyAPIView.as_view(), name='subscriber-detail'),
     path('subscriber/<int:pk>/change-status/', ChangeSubscriberStatus.as_view(), name='change-company-status'),
     path('subscriptions/status/', SubscriptionStatusAPIView.as_view(), name='subscription_status'),
+    path('subscribers/fifteen/', ExpiringfifteenAPIView.as_view(), name='expiring-subscribers'),
+    path('subscribers/thirty/', ExpiringthirtyAPIView.as_view(), name='expiring-subscribers'),
+    path('subscribers/sixty/', ExpiringsixtyAPIView.as_view(), name='expiring-subscribers'),
+    path('subscribers/ninety/', ExpiringninetyAPIView.as_view(), name='expiring-subscribers'),
 ]
 

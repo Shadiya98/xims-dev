@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils.timezone import now
 import os
 import uuid
 from datetime import timedelta
@@ -53,7 +53,7 @@ class Company(models.Model):
     password = models.CharField(max_length=255)  
     phone_no1 = models.CharField(max_length=15)
     phone_no2 = models.CharField(max_length=15, blank=True, null=True)   
-     
+    created_at = models.DateTimeField(default=timezone.now) 
     company_logo = models.ImageField(storage=MediaStorage(), upload_to=generate_unique_filename, null=True, blank=True)
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -108,7 +108,6 @@ class Subscribers(models.Model):
     expiry_date = models.DateField(null=True, blank=True)  
 
     def save(self, *args, **kwargs):
- 
         if self.plan and not self.expiry_date:
             duration = self.plan.validity  
             self.expiry_date = (timezone.now() + timedelta(days=duration)).date()  
@@ -118,3 +117,6 @@ class Subscribers(models.Model):
         if self.company:
           return self.company.company_name
         return "No Company Assigned"
+
+
+

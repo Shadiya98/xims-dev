@@ -243,9 +243,6 @@ class ChangeSubscriberStatus(APIView):
     
 
 
-
- 
-
 class SubscriptionStatusAPIView(APIView):
     def get(self, request, *args, **kwargs):
         today = date.today()
@@ -278,3 +275,33 @@ class SubscriptionStatusAPIView(APIView):
         return Response({
             "subscriptions": subscription_details,
         }, status=status.HTTP_200_OK)
+
+
+class ExpiringfifteenAPIView(APIView):
+    def get(self, request):      
+        today = timezone.now().date()
+        expiration_date = today + timedelta(days=15)     
+        subscribers_expiring_soon = Subscribers.objects.filter(expiry_date__lte=expiration_date, expiry_date__gte=today)     
+        serializer = SubscriberSerializer(subscribers_expiring_soon, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class ExpiringthirtyAPIView(APIView):
+    def get(self, request):      
+        today = timezone.now().date()
+        expiration_date = today + timedelta(days=30)     
+        subscribers_expiring_soon = Subscribers.objects.filter(expiry_date__lte=expiration_date, expiry_date__gte=today)     
+        serializer = SubscriberSerializer(subscribers_expiring_soon, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class ExpiringsixtyAPIView(APIView):
+    def get(self, request):      
+        today = timezone.now().date()
+        expiration_date = today + timedelta(days=60)     
+        subscribers_expiring_soon = Subscribers.objects.filter(expiry_date__lte=expiration_date, expiry_date__gte=today)     
+        serializer = SubscriberSerializer(subscribers_expiring_soon, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class ExpiringninetyAPIView(APIView):
+    def get(self, request):      
+        today = timezone.now().date()
+        expiration_date = today + timedelta(days=90)     
+        subscribers_expiring_soon = Subscribers.objects.filter(expiry_date__lte=expiration_date, expiry_date__gte=today)     
+        serializer = SubscriberSerializer(subscribers_expiring_soon, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
