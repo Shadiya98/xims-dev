@@ -80,10 +80,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = '__all__' 
 
+
 class SubscriberSerializer(serializers.ModelSerializer):
     company_name = serializers.ReadOnlyField(source='company.company_name')
     plan_name = serializers.ReadOnlyField(source='plan.subscription_name')
 
     class Meta:
         model = Subscribers
-        fields = ['id', 'company_name', 'plan_name', 'expiry_date', 'status']   
+        fields = ['id', 'company', 'company_name', 'plan', 'plan_name', 'expiry_date', 'status']
+
+        

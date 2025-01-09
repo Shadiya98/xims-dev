@@ -115,4 +115,6 @@ class Subscribers(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return self.company.company_name
+        if self.company:
+          return self.company.company_name
+        return "No Company Assigned"
