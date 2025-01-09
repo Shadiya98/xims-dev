@@ -89,4 +89,20 @@ class SubscriberSerializer(serializers.ModelSerializer):
         model = Subscribers
         fields = ['id', 'company', 'company_name', 'plan', 'plan_name', 'expiry_date', 'status']
 
-        
+
+
+class SubscriberSerializerss(serializers.ModelSerializer):
+    company_name = serializers.ReadOnlyField(source='company.company_name')
+    plan_name = serializers.ReadOnlyField(source='plan.subscription_name')
+
+    class Meta:
+        model = Subscribers
+        fields = ['id', 'company', 'company_name', 'plan', 'plan_name', 'expiry_date', 'status']
+
+    def update(self, instance, validated_data):
+        plan = validated_data.get('plan', instance.plan)
+        if plan != instance.plan:
+            instance.plan = plan
+            duration = plan.validity if plan else 0
+            instance.expiry_date = (timezone.now() + timedelta(days=duration)).date() if plan else None
+        return super().update(instance, validated_data)

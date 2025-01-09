@@ -211,7 +211,7 @@ class SubscriberListCreateAPIView(generics.ListCreateAPIView):
  
 class SubscriberRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Subscribers.objects.all()
-    serializer_class =   serializer_class = SubscriberSerializer
+    serializer_class =   serializer_class = SubscriberSerializerss
 
 
  
