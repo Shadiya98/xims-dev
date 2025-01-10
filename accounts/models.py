@@ -5,7 +5,6 @@ import uuid
 from datetime import timedelta
 from django.utils import timezone
 from storages.backends.s3boto3 import S3Boto3Storage
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
@@ -28,10 +27,11 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-
+    password = models.CharField(max_length=128, blank=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

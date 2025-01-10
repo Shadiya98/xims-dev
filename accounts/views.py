@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 import jwt
 from datetime import datetime, timedelta
 from datetime import date
-
+from django.contrib.auth import get_user_model
 
 
 class AdminLoginView(APIView):
@@ -305,3 +305,43 @@ class ExpiringninetyAPIView(APIView):
         subscribers_expiring_soon = Subscribers.objects.filter(expiry_date__lte=expiration_date, expiry_date__gte=today)     
         serializer = SubscriberSerializer(subscribers_expiring_soon, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class ChangePasswordView(APIView):
+
+    def put(self, request, *args, **kwargs):
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')     
+
+        if not new_password or not confirm_password:
+            return Response({'error': 'Both new password and confirm password must be provided.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        if new_password != confirm_password:
+            return Response({'error': 'Passwords do not match.'},
+                            status=status.HTTP_400_BAD_REQUEST)      
+        User = get_user_model()       
+        admin_users = User.objects.filter(is_staff=True, is_superuser=True)
+
+        if not admin_users.exists():
+            return Response({'error': 'No admin users found.'},
+                            status=status.HTTP_404_NOT_FOUND)
+        
+        for admin_user in admin_users:        
+
+            if not check_password(current_password, admin_user.password):
+                return Response({'error': 'Current password is incorrect.'},
+                                status=status.HTTP_400_BAD_REQUEST)          
+            admin_user.set_password(new_password)
+            admin_user.save()
+        return Response({'message': 'Password changed successfully for all admin users.'},
+                        status=status.HTTP_200_OK)
+
+ 
+class ActiveCompanyCountAPIView(APIView):
+  
+    def get(self, request, *args, **kwargs):
+        active_count = Company.objects.filter(status='active').count()
+        return Response({'active_company_count': active_count}, status=status.HTTP_200_OK)
+

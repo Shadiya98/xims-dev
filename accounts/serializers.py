@@ -106,3 +106,5 @@ class SubscriberSerializerss(serializers.ModelSerializer):
             duration = plan.validity if plan else 0
             instance.expiry_date = (timezone.now() + timedelta(days=duration)).date() if plan else None
         return super().update(instance, validated_data)
+
+
