@@ -96,7 +96,7 @@ class Subscription(models.Model):
         return self.subscription_name
     
 class Subscribers(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True)  
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True) 
     plan = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True)
     
     STATUS_CHOICES = [
