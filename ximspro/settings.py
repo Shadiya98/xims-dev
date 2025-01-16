@@ -208,7 +208,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000", 
     "https://ximspro.vercel.app",
-    "https://main.d3tcx0hpctju15.amplifyapp.com/"
+    "https://main.d3tcx0hpctju15.amplifyapp.com"
     
    
 ]
