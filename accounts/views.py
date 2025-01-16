@@ -345,3 +345,59 @@ class ActiveCompanyCountAPIView(APIView):
         active_count = Company.objects.filter(status='active').count()
         return Response({'active_company_count': active_count}, status=status.HTTP_200_OK)
 
+
+
+class ValidateEmailAndUserIDView(APIView):
+    def get(self, request):
+        email = request.GET.get('email_address', '')  
+        user_id = request.GET.get('user_id', '')  
+
+        if not email and not user_id:
+            return Response({'status': 400, 'error': 'Email or User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if email:
+            if Company.objects.filter(email_address=email).exists():
+                return Response({'status': 200, 'exists': True, 'field': 'email_address'}, status=status.HTTP_200_OK)    
+        if user_id:
+            if Company.objects.filter(user_id=user_id).exists():
+                return Response({'status': 200, 'exists': True, 'field': 'user_id'}, status=status.HTTP_200_OK)       
+        return Response({'status': 200, 'exists': False}, status=status.HTTP_200_OK)
+    
+ 
+
+class SubscribersInDateRangeAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+
+        if start_date and end_date:
+            try:
+                # Parse the dates from string to datetime object
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+
+                # Ensure the start date is before the end date
+                if start_date > end_date:
+                    return Response({"error": "Start date cannot be later than end date."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Fetch all subscribers
+                subscribers = Subscribers.objects.all()
+
+                filtered_subscribers = []
+                for subscriber in subscribers:
+                    if subscriber.plan:
+                        # Calculate the start date from expiry_date and plan's validity (duration)
+                        plan_duration = subscriber.plan.validity  # Duration in days
+                        calculated_start_date = subscriber.expiry_date - timedelta(days=plan_duration)
+
+                        # Now we check if the calculated start date is within the range
+                        if start_date <= calculated_start_date <= end_date:
+                            filtered_subscribers.append(subscriber)
+                
+                # Serialize the filtered subscriber data
+                serializer = SubscriberSerializer(filtered_subscribers, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            except ValueError:
+                return Response({"error": "Invalid date format. Please use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({"error": "Please provide both start_date and end_date."}, status=status.HTTP_400_BAD_REQUEST)
