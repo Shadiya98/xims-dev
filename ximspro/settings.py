@@ -144,27 +144,25 @@ WSGI_APPLICATION = 'ximspro.wsgi.application'
 
  
 
+
+
 # DATABASES = {
-#     "default":dj_database_url.parse("postgresql://ximspro_s7x3_user:kyc4PfRLUj0Yj9NussZA5uh6HCILlfnS@dpg-ctdtu5rtq21c73fu6f20-a.oregon-postgres.render.com/ximspro_s7x3")
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DATABASE_ENGINE'),
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': config('DATABASE_PORT'),
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DATABASE_ENGINE'),
-#         'NAME': config('DATABASE_NAME'),
-#         'USER': config('DATABASE_USER'),
-#         'PASSWORD': config('DATABASE_PASSWORD'),
-#         'HOST': config('DATABASE_HOST'),
-#         'PORT': config('DATABASE_PORT'),
-#     }
-# }
  
 
 # Password validation
