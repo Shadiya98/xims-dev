@@ -105,18 +105,18 @@ class Subscribers(models.Model):
     ]
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    start_date = models.DateField(null=True, blank=True)  
     expiry_date = models.DateField(null=True, blank=True)  
 
     def save(self, *args, **kwargs):
+        if not self.start_date:   
+            self.start_date = now().date()
         if self.plan and not self.expiry_date:
             duration = self.plan.validity  
-            self.expiry_date = (timezone.now() + timedelta(days=duration)).date()  
+            self.expiry_date = (now() + timedelta(days=duration)).date()  
         super().save(*args, **kwargs)
     
     def __str__(self):
         if self.company:
-          return self.company.company_name
+            return self.company.company_name
         return "No Company Assigned"
-
-
-
