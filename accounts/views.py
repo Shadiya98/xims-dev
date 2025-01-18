@@ -387,3 +387,16 @@ class ValidatuseridView(APIView):
             return Response({'status': 200, 'exists': True}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 200, 'exists': False}, status=status.HTTP_200_OK)
+        
+class AdminDetailsAPIView(APIView):
+    
+
+    def get(self, request):
+     
+        admins = User.objects.filter(is_staff=True)  
+
+     
+        serializer = UserSerializer(admins, many=True)
+
+   
+        return Response(serializer.data)

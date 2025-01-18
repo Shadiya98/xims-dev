@@ -108,3 +108,7 @@ class SubscriberSerializerss(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'date_joined', 'is_staff', 'is_superuser']

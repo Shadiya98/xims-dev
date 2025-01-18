@@ -25,6 +25,6 @@ urlpatterns = [
     path('active-company-count/', ActiveCompanyCountAPIView.as_view(), name='active-company-count'),
     path('validate-email/', ValidateEmailView.as_view(), name='validate_email_userid'),
     path('validate-userid/', ValidatuseridView.as_view(), name='validate_email_userid'),
-    
+    path('admins-detail/', AdminDetailsAPIView.as_view(), name='admin-details'),
 ]
 
