@@ -109,11 +109,19 @@ class Subscribers(models.Model):
     expiry_date = models.DateField(null=True, blank=True)  
 
     def save(self, *args, **kwargs):
+        # Set start_date if not provided
         if not self.start_date:   
             self.start_date = now().date()
-        if self.plan and not self.expiry_date:
+
+        # Check if the plan exists and validity is a valid integer
+        if self.plan and self.plan.validity and self.plan.validity > 0:
             duration = self.plan.validity  
-            self.expiry_date = (now() + timedelta(days=duration)).date()  
+            self.expiry_date = now().date() + timedelta(days=duration)
+
+ 
+        else:
+            self.expiry_date = None  # or set a default expiry date
+
         super().save(*args, **kwargs)
     
     def __str__(self):
