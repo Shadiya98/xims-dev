@@ -316,20 +316,16 @@ class ChangePasswordView(APIView):
 
         if not new_password or not confirm_password:
             return Response({'error': 'Both new password and confirm password must be provided.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        
+                            status=status.HTTP_400_BAD_REQUEST)       
         if new_password != confirm_password:
             return Response({'error': 'Passwords do not match.'},
                             status=status.HTTP_400_BAD_REQUEST)      
         User = get_user_model()       
         admin_users = User.objects.filter(is_staff=True, is_superuser=True)
-
         if not admin_users.exists():
             return Response({'error': 'No admin users found.'},
-                            status=status.HTTP_404_NOT_FOUND)
-        
+                            status=status.HTTP_404_NOT_FOUND)       
         for admin_user in admin_users:        
-
             if not check_password(current_password, admin_user.password):
                 return Response({'error': 'Current password is incorrect.'},
                                 status=status.HTTP_400_BAD_REQUEST)          
@@ -348,10 +344,10 @@ class ActiveCompanyCountAPIView(APIView):
 
 
 class ValidateEmailAndUserIDView(APIView):
+
     def get(self, request):
         email = request.GET.get('email_address', '')  
         user_id = request.GET.get('user_id', '')  
-
         if not email and not user_id:
             return Response({'status': 400, 'error': 'Email or User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
         if email:
@@ -365,38 +361,29 @@ class ValidateEmailAndUserIDView(APIView):
  
 
 class ValidateEmailView(APIView):
+
     def get(self, request):
-        email_address = request.GET.get('email_address', '')
-        
+        email_address = request.GET.get('email_address', '')       
         if not email_address:
-            return Response({'status': 400, 'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'status': 400, 'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)        
         if Company.objects.filter(email_address=email_address).exists():
             return Response({'status': 200, 'exists': True}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 200, 'exists': False}, status=status.HTTP_200_OK)
 
 class ValidatuseridView(APIView):
+
     def get(self, request):
-        user_id = request.GET.get('user_id', '')
-        
+        user_id = request.GET.get('user_id', '')        
         if not user_id:
-            return Response({'status': 400, 'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({'status': 400, 'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)        
         if Company.objects.filter(user_id=user_id).exists():
             return Response({'status': 200, 'exists': True}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 200, 'exists': False}, status=status.HTTP_200_OK)
         
 class AdminDetailsAPIView(APIView):
-    
-
-    def get(self, request):
-     
-        admins = User.objects.filter(is_staff=True)  
-
-     
-        serializer = UserSerializer(admins, many=True)
-
-   
+    def get(self, request):     
+        admins = User.objects.filter(is_staff=True)       
+        serializer = UserSerializer(admins, many=True)  
         return Response(serializer.data)
