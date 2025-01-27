@@ -5,10 +5,6 @@ from django.contrib.auth.hashers import make_password
 
 
  
- 
- 
-
- 
 class UserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)   
     confirm_email = serializers.EmailField(write_only=True)   
